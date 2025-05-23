@@ -1,0 +1,232 @@
+/* Define CSS variables for primary colors and card width */
+:root {
+    --primary-color: #2c3e50;       /* Dark blue-grey used for main text and elements */
+    --secondary-color: #3498db;     /* Bright blue used for hover states and accents */
+    --today-color: #e74c3c;         /* Red color to highlight today's date */
+    --card-width: 300px;              /* Fixed width for each calendar card */
+}
+
+/* Apply border-box sizing model to all elements and their pseudo-elements */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Style the body to use Arial font, center content horizontally and vertically,
+   set full viewport height, remove default margin, add padding, and set background color */
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+/* Container for the carousel:
+   - max-width 100% to be responsive
+   - fixed width defined by CSS variable
+   - hide overflow to clip scrolling elements
+   - relative positioning for child elements positioning
+   - allow vertical panning on touch devices */
+.carousel-container {
+    max-width: 100%;
+    width: var(--card-width);
+    overflow: hidden;
+    position: relative;
+    touch-action: pan-y;
+}
+
+/* Wrapper for the carousel cards:
+   - flex layout for horizontal alignment
+   - gap between cards
+   - smooth transition for transform property */
+.carousel-wrapper {
+    display: flex;
+    gap: 28px;
+    transition: transform 0.5s ease;
+}
+
+/* Individual calendar card styling:
+   - white background with rounded corners
+   - subtle shadow for depth
+   - fixed width with flex shorthand
+   - relative positioning to enable tooltip placement */
+.calendar-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    flex: 0 0 var(--card-width);
+    position: relative; /* For positioning tooltips */
+}
+
+/* Responsive rule to ensure calendar cards maintain fixed width on wider screens */
+@media (min-width: 400px) {
+    .calendar-card {
+        flex: 0 0 var(--card-width);
+    }
+}
+
+/* Header section of each calendar card:
+   - flexbox to space navigation buttons and title evenly
+   - vertical alignment center
+   - margin below and horizontal padding */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 0 15px;
+}
+
+/* Navigation buttons styling:
+   - remove default button styles (background, border)
+   - use primary color for text
+   - enlarge font for visibility
+   - pointer cursor on hover
+   - padding and rounded corners for better click area
+   - disable text selection */
+.nav-button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    user-select: none;
+}
+
+/* Hover and focus states for navigation buttons:
+   - light gray background highlight
+   - remove default outline */
+.nav-button:hover,
+.nav-button:focus {
+    background-color: #f0f0f0;
+    outline: none;
+}
+
+/* Grid container for calendar days:
+   - 7 equal columns (one per weekday)
+   - small gap between days
+   - padding inside grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    padding: 0 10px 10px 10px;
+}
+
+/* Weekday header styling:
+   - small padding for spacing
+   - center aligned text
+   - smaller font size
+   - primary color for text
+   - bold font weight
+   - prevent text selection */
+.calendar-day-header {
+    padding: 5px;
+    text-align: center;
+    font-size: 0.8em;
+    color: var(--primary-color);
+    font-weight: bold;
+    user-select: none;
+}
+
+/* Style for each calendar day cell:
+   - maintain square aspect ratio
+   - flexbox centering content vertically and horizontally
+   - medium font size
+   - rounded corners
+   - pointer cursor for interactivity
+   - white background
+   - relative positioning for tooltips
+   - prevent text selection
+   - smooth background and text color transitions on hover */
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #fff;
+    position: relative;
+    user-select: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Empty day placeholders (for days outside the current month):
+   - transparent background
+   - default cursor (no pointer) */
+.calendar-day.empty {
+    background-color: transparent;
+    cursor: default;
+}
+
+/* Style for today's date:
+   - highlight with red background color
+   - white text color
+   - bold font */
+.calendar-day.today {
+    background-color: var(--today-color);
+    color: white;
+    font-weight: bold;
+}
+
+/* Style for holidays:
+   - green background
+   - white text
+   - bold font */
+.calendar-day.holiday {
+    background-color: #27ae60;
+    color: white;
+    font-weight: bold;
+}
+
+/* Hover effect for days (excluding empty days):
+   - change background to secondary blue
+   - white text */
+.calendar-day:hover:not(.empty) {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+/* Tooltip style for holiday names:
+   - absolute positioned above the day cell
+   - dark semi-transparent background
+   - white text with padding
+   - rounded corners
+   - small font size
+   - no pointer events (so it doesn't interfere with hover)
+   - nowrap text to avoid wrapping
+   - high z-index to appear on top
+   - initially hidden (display none)
+   - positioned slightly above the day box */
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 1000;
+    display: none;
+    bottom: calc(100% + 5px);
+}
+
+/* Tooltip arrow styling:
+   - small triangle below tooltip using border trick
+   - positioned at bottom of tooltip */
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+}
